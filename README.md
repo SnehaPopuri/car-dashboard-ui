@@ -1,6 +1,6 @@
 # Car Dashboard UI Simulator
 
-A real-time car dashboard simulator with interactive controls and live metrics visualization. The project consists of a React frontend for the dashboard interface and a Flask backend for simulation and state management.
+A real-time car dashboard simulator with interactive controls and live metrics visualization. The project consists of a React frontend for the dashboard interface and a Node.js/Firebase backend for simulation and state management.
 
 ![Dashboard Preview](frontend/public/dashboard-preview.png)
 
@@ -17,34 +17,35 @@ A real-time car dashboard simulator with interactive controls and live metrics v
 
 ### Technical Features
 - Real-time WebSocket communication
-- State persistence using SQLite/MySQL database
-- Responsive gauge animations
-- Dynamic state management
+- Firebase Realtime Database integration
+- Responsive gauge animations using react-gauge-component
+- Dynamic state management with Socket.IO
 - Automated metrics simulation
 
 ## Technology Stack
 
 ### Frontend
-- React.js
+- React.js (v18)
+- Vite
 - Tailwind CSS
 - Socket.io-client
 - FontAwesome Icons
 - React Gauge Component
+- ESLint with React plugins
 
 ### Backend
-- Flask
-- Flask-SocketIO
-- SQLAlchemy
-- Flask-Migrate
-- SQLite/MySQL
+- Node.js
+- Express.js
+- Socket.IO
+- Firebase Admin SDK
+- Cors
 
 ## Installation
 
 ### Prerequisites
 - Node.js (v14 or higher)
-- Python (v3.8 or higher)
-- pip (Python package manager)
 - npm (Node package manager)
+- Firebase account and project
 
 ### Backend Setup
 
@@ -53,36 +54,30 @@ A real-time car dashboard simulator with interactive controls and live metrics v
 cd backend
 ```
 
-2. Create a virtual environment:
+2. Install dependencies:
 ```bash
-python -m venv .venv
+npm install
 ```
 
-3. Activate the virtual environment:
-- Windows:
-```bash
-.venv\Scripts\activate
+3. Create a .env file based on .env.example and fill in your Firebase credentials:
 ```
-- Unix/MacOS:
-```bash
-source .venv/bin/activate
-```
-
-4. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
-
-5. Initialize the database:
-```bash
-flask db init
-flask db migrate -m "Initial migration"
-flask db upgrade
+DB_USER=root
+DB_PASSWORD=password
+DB_NAME=car_dashboard
+DB_HOST=localhost
+PORT=5000 
+FIREBASE_PROJECT_ID=your-project-id
+FIREBASE_PRIVATE_KEY_ID=your-private-key-id
+FIREBASE_PRIVATE_KEY=your-private-key
+FIREBASE_CLIENT_EMAIL=your-client-email
+FIREBASE_CLIENT_ID=your-client-id
+FIREBASE_CLIENT_CERT_URL=your-cert-url
+FIREBASE_DATABASE_URL=your-database-url
 ```
 
-6. Start the backend server:
+4. Start the backend server:
 ```bash
-python app.py
+npm run dev
 ```
 
 ### Frontend Setup
@@ -97,7 +92,12 @@ cd frontend
 npm install
 ```
 
-3. Start the development server:
+3. Create a .env file based on .env.Example:
+```
+BACKEND_URL="http://localhost:5000"
+```
+
+4. Start the development server:
 ```bash
 npm run dev
 ```
@@ -107,87 +107,73 @@ npm run dev
 ```
 car-dashboard-ui/
 ├── backend/
-│   ├── migrations/
-│   ├── app.py
-│   ├── config.py
-│   ├── extensions.py
-│   ├── models.py
-│   └── requirements.txt
+│   ├── config/
+│   │   ├── database.js
+│   │   └── firebase.js
+│   ├── models/
+│   │   └── carState.js
+│   ├── app.js
+│   ├── .env.example
+│   └── package.json
 └── frontend/
     ├── src/
     │   ├── App.jsx
     │   ├── index.css
     │   └── main.jsx
     ├── public/
+    ├── .env.Example
     ├── package.json
-    └── tailwind.config.js
+    ├── tailwind.config.js
+    └── vite.config.js
 ```
 
-## Features in Detail
+## Key Updates
 
-### Power Gauge
-- Displays power consumption (0-100 kW)
-- Color-coded segments for different power levels
-- Real-time updates based on motor speed
+### Backend Changes
+- Migrated from Flask/SQLite to Node.js/Firebase
+- Implemented Firebase Realtime Database integration
+- Added WebSocket support using Socket.IO
+- Enhanced simulation logic for real-time metrics
+- Added environment configuration support
 
-### RPM Gauge
-- Shows motor RPM (0-800)
-- Color-coded segments for different RPM ranges
-- Dynamic updates based on motor speed setting
-
-### Battery System
-- Dynamic battery percentage display
-- Multiple battery status icons based on charge level
-- Charging simulation with variable rates
-- Low battery warnings
-
-### Temperature Monitoring
-- Real-time temperature simulation
-- Temperature increases with motor speed
-- Cooling simulation when motor is off
-- Warning indicators for high temperature
-
-### Motor Speed Control
-- 5 speed settings (OFF, 1, 2, 3, 4)
-- Automatic power and RPM adjustment
-- Safety lockouts for low battery and parking brake
-
-### Gear System
-- Automatic gear ratio changes based on speed
-- Display format: N/N, 1:4, 1:3, 1:2, 1:1
-- Neutral gear in OFF state or when charging
+### Frontend Changes
+- Migrated to Vite build tool
+- Added ESLint configuration for React
+- Implemented responsive gauge components
+- Enhanced UI with Tailwind CSS
+- Added real-time WebSocket communication
+- Improved state management and animations
 
 ## State Management
 
-### Database Schema
-```sql
-CREATE TABLE car_states (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    power FLOAT NOT NULL,
-    rpm INTEGER NOT NULL,
-    battery FLOAT NOT NULL,
-    temperature FLOAT NOT NULL,
-    charging BOOLEAN NOT NULL,
-    motor_speed INTEGER NOT NULL,
-    is_running BOOLEAN NOT NULL,
-    gear VARCHAR(10) NOT NULL,
-    parking_brake BOOLEAN NOT NULL,
-    check_engine BOOLEAN NOT NULL,
-    motor_warning BOOLEAN NOT NULL,
-    battery_low BOOLEAN NOT NULL,
-    updated_at DATETIME
-);
+### Firebase Data Structure
+```javascript
+{
+  "carState": {
+    "power": 0,
+    "rpm": 0,
+    "battery": 100,
+    "temperature": 25,
+    "charging": false,
+    "motor_speed": 0,
+    "is_running": false,
+    "gear": "N/N",
+    "parking_brake": false,
+    "check_engine": false,
+    "motor_warning": false,
+    "battery_low": false,
+    "updated_at": "ISO_DATE_STRING"
+  }
+}
 ```
 
-## API Documentation
+## WebSocket Events
 
-### WebSocket Events
-
-#### Client to Server
+### Client to Server
 - `set_motor_speed`: Set motor speed (0-4)
 - `plug_connection`: Toggle charging state
 
-#### Server to Client
+### Server to Client
 - `car_state_update`: Real-time state updates
 
 ## Contributing
@@ -200,10 +186,11 @@ CREATE TABLE car_states (
 
 ## License
 
-This project is licensed under the MIT License - you can see the license file for details.
+This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## Acknowledgments
 
 - React Gauge Component for gauge visualizations
 - FontAwesome for icons
 - Tailwind CSS for styling
+- Firebase for real-time database
