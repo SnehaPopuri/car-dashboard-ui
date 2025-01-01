@@ -38,7 +38,7 @@ A real-time car dashboard simulator with interactive controls and live metrics v
 - Express.js
 - Socket.IO
 - Firebase Admin SDK
-- Cors
+- CORS
 
 ## Installation
 
@@ -59,7 +59,7 @@ cd backend
 npm install
 ```
 
-3. Create a .env file based on .env.example and fill in your Firebase credentials:
+3. Create a .env file based on .env.example and fill in your Firebase credentials and CORS settings:
 ```
 DB_USER=root
 DB_PASSWORD=password
@@ -73,6 +73,7 @@ FIREBASE_CLIENT_EMAIL=your-client-email
 FIREBASE_CLIENT_ID=your-client-id
 FIREBASE_CLIENT_CERT_URL=your-cert-url
 FIREBASE_DATABASE_URL=your-database-url
+CORS_ORIGINS=http://localhost:5173,https://your-frontend-domain.com
 ```
 
 4. Start the backend server:
@@ -92,15 +93,74 @@ cd frontend
 npm install
 ```
 
-3. Create a .env file based on .env.Example:
+3. Create a .env file:
 ```
-BACKEND_URL="http://localhost:5000"
+VITE_BACKEND_URL=https://your-backend-domain.com
 ```
 
 4. Start the development server:
 ```bash
 npm run dev
 ```
+
+## Deployment
+
+### Backend Deployment (e.g., on Render)
+
+1. Set the following environment variables in your deployment platform:
+- All Firebase credentials from your .env file
+- `CORS_ORIGINS` with comma-separated allowed origins
+- `PORT` (if required by platform)
+
+2. Configure CORS in app.js:
+```javascript
+const allowedOrigins = process.env.CORS_ORIGINS ? 
+  process.env.CORS_ORIGINS.split(',') : 
+  ["http://localhost:5173", "https://your-frontend-domain.com"];
+
+app.use(cors({
+  origin: allowedOrigins,
+  methods: ["GET", "POST"],
+  credentials: true
+}));
+```
+
+### Frontend Deployment (e.g., on Vercel)
+
+1. Set environment variables in your Vercel project:
+```
+VITE_BACKEND_URL=https://your-backend-domain.com
+```
+
+2. Configure Socket.IO connection in App.jsx:
+```javascript
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+const newSocket = io(backendUrl, {
+  withCredentials: true,
+  transports: ['websocket', 'polling'],
+  extraHeaders: {
+    "my-custom-header": "abcd"
+  }
+});
+```
+
+## Troubleshooting
+
+### CORS Issues
+If you encounter CORS errors:
+
+1. Verify your backend CORS configuration:
+- Check if your frontend domain is listed in `CORS_ORIGINS`
+- Ensure the Socket.IO CORS settings match the Express CORS settings
+
+2. Check frontend configuration:
+- Confirm `VITE_BACKEND_URL` is set correctly
+- Verify Socket.IO connection options include `withCredentials: true`
+
+3. Common solutions:
+- Add both HTTP and HTTPS versions of your domains to `CORS_ORIGINS`
+- Check for trailing slashes in URLs
+- Verify all required headers are allowed
 
 ## Project Structure
 
