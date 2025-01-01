@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const cors = require('cors');
 const { createServer } = require('http');
@@ -5,12 +7,30 @@ const { Server } = require('socket.io');
 const db = require('./config/firebase');
 
 const app = express();
+
+// Get allowed origins from environment variable
+const allowedOrigins = process.env.CORS_ORIGINS ? 
+  process.env.CORS_ORIGINS.split(',') : 
+  ["http://localhost:5173", "https://car-dashboard-ui.vercel.app"];
+
+app.use(cors({
+  origin: allowedOrigins,
+  methods: ["GET", "POST"],
+  credentials: true
+}));
+
 const httpServer = createServer(app);
+
+// Update Socket.IO configuration
 const io = new Server(httpServer, {
   cors: {
-    origin: "*",
-    methods: ["GET", "POST"]
-  }
+    origin: allowedOrigins,
+    methods: ["GET", "POST"],
+    credentials: true,
+    allowedHeaders: ["my-custom-header"],
+  },
+  allowEIO3: true,
+  transports: ['websocket', 'polling']
 });
 
 // Constants

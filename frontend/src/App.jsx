@@ -91,13 +91,23 @@ function App() {
   };
 
   useEffect(() => {
-    // const backendUrl = import.meta.env.VITE_BACKEND_URL;
-    // const newSocket = io(backendUrl);
-    const newSocket = io("https://car-dashboard-ui-backend.onrender.com");
+    const backendUrl = import.meta.env.VITE_BACKEND_URL || "https://car-dashboard-ui-backend.onrender.com";
+    const newSocket = io(backendUrl, {
+      withCredentials: true,
+      transports: ['websocket', 'polling'],
+      extraHeaders: {
+        "my-custom-header": "abcd"
+      }
+    });
+    
     setSocket(newSocket);
 
     newSocket.on("connect", () => {
       console.log("Connected to server");
+    });
+
+    newSocket.on("connect_error", (error) => {
+      console.error("Connection error:", error);
     });
 
     newSocket.on("car_state_update", (data) => {
