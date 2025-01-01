@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-black m-0 p-0;
+  }
+}
+
+@layer components {
+  .status-icon {
+    @apply relative text-gray-500 transition-colors duration-300 w-10 h-10 flex items-center justify-center rounded-full;
+  }
+
+  .status-icon.active {
+    @apply text-red-500;
+  }
+
+  .status-icon.active::after {
+    content: '';
+    @apply absolute inset-0 border-2 border-red-500 rounded-full animate-pulse;
+  }
+
+  .indicator-icon {
+    @apply flex items-center text-gray-400 bg-dashboard-accent/20 rounded px-4 py-2 border border-dashboard-accent;
+  }
+
+  .speed-button {
+    @apply px-6 py-2 text-sm text-white relative hover:bg-dashboard-accent/50 transition-colors;
+  }
+
+  .speed-button.active {
+    @apply bg-dashboard-accent;
+  }
+
+  .speed-button::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-full h-0.5 bg-dashboard-accent;
+  }
+
+  .plug-connection {
+    @apply flex items-center text-gray-400 bg-dashboard-accent/20 rounded-full 
+           px-6 py-3 border border-dashboard-accent gap-3 text-sm transition-colors duration-300;
+  }
+
+  .plug-connection:hover:not(:disabled) {
+    @apply bg-dashboard-accent/30;
+  }
+
+  .speed-button[disabled] {
+    @apply opacity-50 cursor-not-allowed;
+  }
+
+  .speed-button:first-child {
+    @apply font-medium;
+  }
+
+  .speed-button:first-child.active {
+    @apply bg-red-900/40;
+  }
+}
