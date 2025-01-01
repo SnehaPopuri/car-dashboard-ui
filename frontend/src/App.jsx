@@ -91,9 +91,9 @@ function App() {
   };
 
   useEffect(() => {
-    const backendUrl = import.meta.env.VITE_BACKEND_URL;
-    const newSocket = io(backendUrl);
-    // const newSocket = io("https://car-dashboard-backend.onrender.com");
+    // const backendUrl = import.meta.env.VITE_BACKEND_URL;
+    // const newSocket = io(backendUrl);
+    const newSocket = io("https://car-dashboard-ui-backend.onrender.com");
     setSocket(newSocket);
 
     newSocket.on("connect", () => {
