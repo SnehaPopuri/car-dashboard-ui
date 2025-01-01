@@ -91,7 +91,8 @@ function App() {
   };
 
   useEffect(() => {
-    const newSocket = io("http://localhost:5000");
+    const backendUrl = process.env.BACKEND_URL;
+    const newSocket = io(backendUrl);
     // const newSocket = io("https://car-dashboard-backend.onrender.com");
     setSocket(newSocket);
 
@@ -174,10 +175,14 @@ function App() {
     <div className="flex flex-col h-screen bg-dashboard-dark text-white">
       {/* Top Status Bar */}
       <div className="flex gap-6 px-8 py-4 bg-black border-b border-dashboard-accent">
-        <div className={`status-icon ${indicators.parking_brake ? "active" : ""}`}>
+        <div
+          className={`status-icon ${indicators.parking_brake ? "active" : ""}`}
+        >
           <FontAwesomeIcon icon={faParking} className="text-2xl" />
         </div>
-        <div className={`status-icon ${indicators.check_engine ? "active" : ""}`}>
+        <div
+          className={`status-icon ${indicators.check_engine ? "active" : ""}`}
+        >
           <FontAwesomeIcon icon={faCarBattery} className="text-2xl" />
         </div>
         <div
