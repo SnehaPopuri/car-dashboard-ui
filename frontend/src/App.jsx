@@ -399,6 +399,14 @@ function App() {
             </button>
           </div>
         </div>
+        <div className="flex items-center space-x-6">
+          <div className="flex items-center space-x-8 text-gray-500">
+            {/* Left side icons */}
+            <button disabled={true} className="cursor-not-allowed">
+              <FontAwesomeIcon icon={faTableCells} className="text-4xl" />
+            </button>
+          </div>
+        </div>
         <div className="flex items-center">
           <button
             className={`plug-connection 

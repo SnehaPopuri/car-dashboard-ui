@@ -232,7 +232,7 @@ io.on('connection', async (socket) => {
       await updateCarState({
         motor_speed: data.speed,
         is_running: true,
-        check_engine: true,
+        check_engine: false,
         charging: false,
         gear: GEAR_RATIOS[data.speed]
       });
